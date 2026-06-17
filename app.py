@@ -8,11 +8,13 @@ from __future__ import annotations
 import os
 import asyncio
 import json
+import mimetypes
 import re
 import time
 from pathlib import Path
 from fastapi import FastAPI, Request, File, UploadFile, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse, FileResponse, Response, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import uvicorn
 from dotenv import load_dotenv
@@ -41,6 +43,7 @@ from rag.retriever import retrieve_protocol_context
 
 # Initialize FastAPI
 app = FastAPI(title="Haalat Emergency Intelligence System")
+app.mount("/static", StaticFiles(directory=PROJECT_ROOT / "static"), name="static")
 
 # Constants & Configuration
 REQUESTED_GEMINI_MODEL = "gemini-2.5-flash"
@@ -437,7 +440,7 @@ def _mass_event_check(area_name: str) -> tuple[bool, str]:
     return False, "No active mass-event clusters flagged in district."
 
 # ─── MULTIMODAL AUDIO & RAG SERVICES ─────────────────────────────────────────
-def transcribe_audio_if_possible(audio_path: str) -> str:
+def transcribe_audio_if_possible(audio_path: str, mime_type: str | None = None) -> str:
     api_key = _gemini_api_key()
     if not api_key:
         print("[Haalat] Gemini API key not found. Skipping transcription.")
@@ -447,12 +450,13 @@ def transcribe_audio_if_possible(audio_path: str) -> str:
         client = genai.Client(api_key=api_key)
         audio_file = Path(audio_path)
         if audio_file.exists():
+            detected_mime = mime_type or mimetypes.guess_type(audio_file.name)[0] or "audio/wav"
             response = client.models.generate_content(
                 model=GEMINI_MODEL,
                 contents=[
                     genai.types.Part.from_bytes(
                         data=audio_file.read_bytes(),
-                        mime_type="audio/wav"
+                        mime_type=detected_mime
                     ),
                     "Transcribe the spoken audio and translate it to English. If the audio is already in English, just return the transcription. Provide ONLY the final English translation/transcription, with no extra text, notes, or labels."
                 ]
@@ -663,6 +667,20 @@ def get_logo():
         return FileResponse(logo_path)
     raise HTTPException(status_code=404, detail="Logo not found")
 
+@app.get("/haalat-ui.css")
+def get_haalat_css():
+    css_path = PROJECT_ROOT / "static" / "haalat-ui.css"
+    if css_path.exists():
+        return FileResponse(css_path, media_type="text/css")
+    raise HTTPException(status_code=404, detail="Haalat CSS not found")
+
+@app.get("/haalat-ui.js")
+def get_haalat_js():
+    js_path = PROJECT_ROOT / "static" / "haalat-ui.js"
+    if js_path.exists():
+        return FileResponse(js_path, media_type="text/javascript")
+    raise HTTPException(status_code=404, detail="Haalat JS not found")
+
 @app.get("/instruction-assets/{asset_name}")
 def get_instruction_asset(asset_name: str):
     svg = INSTRUCTION_VISUAL_SVGS.get(asset_name)
@@ -682,12 +700,21 @@ async def upload_audio(file: UploadFile = File(...)):
     audio_dir = PROJECT_ROOT / "data" / "audio"
     audio_dir.mkdir(parents=True, exist_ok=True)
     
-    file_path = audio_dir / f"recording_{int(time.time())}.wav"
+    content_type = file.content_type or "audio/wav"
+    extension = mimetypes.guess_extension(content_type) or ".wav"
+    if extension == ".weba":
+        extension = ".webm"
+    file_path = audio_dir / f"recording_{int(time.time())}{extension}"
     try:
         with file_path.open("wb") as buffer:
             content = await file.read()
             buffer.write(content)
-        return {"file_path": str(file_path)}
+        transcription = transcribe_audio_if_possible(str(file_path), content_type)
+        return {
+            "file_path": str(file_path),
+            "transcription": transcription,
+            "has_transcription": bool(transcription and not transcription.startswith("[Audio")),
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to save audio: {e}")
 
@@ -1014,4 +1041,4 @@ if __name__ == "__main__":
             })
 
     print("[Haalat] Starting FastAPI World-Class Command Center on http://127.0.0.1:8000 ...")
-    uvicorn.run("app:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("app:app", host="127.0.0.1", port=8000, reload=False)

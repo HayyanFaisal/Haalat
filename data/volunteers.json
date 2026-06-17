@@ -2,7 +2,12 @@
   {
     "id": "V001",
     "name": "Dr. Ayesha Siddiqui",
-    "skills": ["CPR", "trauma", "pediatrics", "basic_life_support"],
+    "skills": [
+      "CPR",
+      "trauma",
+      "pediatrics",
+      "basic_life_support"
+    ],
     "lat": 24.8607,
     "lng": 67.0011,
     "area": "Garden",
@@ -14,7 +19,12 @@
   {
     "id": "V002",
     "name": "Muhammad Bilal",
-    "skills": ["First Aid", "CPR", "firefighting", "basic_life_support"],
+    "skills": [
+      "First Aid",
+      "CPR",
+      "firefighting",
+      "basic_life_support"
+    ],
     "lat": 24.8681,
     "lng": 67.0261,
     "area": "Soldier Bazaar",
@@ -26,9 +36,14 @@
   {
     "id": "V003",
     "name": "Zainab Khan",
-    "skills": ["trauma", "nursing", "triage", "bleeding_control"],
+    "skills": [
+      "trauma",
+      "nursing",
+      "triage",
+      "bleeding_control"
+    ],
     "lat": 24.8325,
-    "lng": 67.0430,
+    "lng": 67.043,
     "area": "Clifton",
     "phone": "0312-3334445",
     "availability": "on call",
@@ -38,7 +53,11 @@
   {
     "id": "V004",
     "name": "Hamza Ali",
-    "skills": ["CPR", "first_aid", "basic_life_support"],
+    "skills": [
+      "CPR",
+      "first_aid",
+      "basic_life_support"
+    ],
     "lat": 33.7167,
     "lng": 73.0587,
     "area": "Blue Area",
@@ -50,7 +69,11 @@
   {
     "id": "V005",
     "name": "Dr. Sarah Ahmed",
-    "skills": ["CPR", "trauma_support", "first_aid"],
+    "skills": [
+      "CPR",
+      "trauma_support",
+      "first_aid"
+    ],
     "lat": 33.6933,
     "lng": 73.0586,
     "area": "G-8",
@@ -62,9 +85,12 @@
   {
     "id": "V006",
     "name": "Kamran Jamil",
-    "skills": ["bleeding_control", "first_aid"],
-    "lat": 24.8900,
-    "lng": 67.0450,
+    "skills": [
+      "bleeding_control",
+      "first_aid"
+    ],
+    "lat": 24.89,
+    "lng": 67.045,
     "area": "PECHS",
     "phone": "0345-2223344",
     "availability": "available",
@@ -74,9 +100,13 @@
   {
     "id": "V007",
     "name": "Fatima Rizvi",
-    "skills": ["CPR", "basic_life_support", "nursing"],
-    "lat": 24.9100,
-    "lng": 67.0900,
+    "skills": [
+      "CPR",
+      "basic_life_support",
+      "nursing"
+    ],
+    "lat": 24.91,
+    "lng": 67.09,
     "area": "Gulshan-e-Iqbal",
     "phone": "0331-4445566",
     "availability": "available",
@@ -86,9 +116,13 @@
   {
     "id": "V008",
     "name": "Usman Tariq",
-    "skills": ["rescue", "first_aid", "burn_care"],
-    "lat": 24.9300,
-    "lng": 67.0400,
+    "skills": [
+      "rescue",
+      "first_aid",
+      "burn_care"
+    ],
+    "lat": 24.93,
+    "lng": 67.04,
     "area": "North Nazimabad",
     "phone": "0301-8889900",
     "availability": "on call",
@@ -98,9 +132,13 @@
   {
     "id": "V009",
     "name": "Sajid Baloch",
-    "skills": ["CPR", "rescue", "bleeding_control"],
-    "lat": 24.8800,
-    "lng": 66.9800,
+    "skills": [
+      "CPR",
+      "rescue",
+      "bleeding_control"
+    ],
+    "lat": 24.88,
+    "lng": 66.98,
     "area": "Lyari",
     "phone": "0322-7778899",
     "availability": "available",
@@ -110,9 +148,13 @@
   {
     "id": "V010",
     "name": "Mariam Yusuf",
-    "skills": ["triage", "first_aid", "basic_life_support"],
-    "lat": 33.7200,
-    "lng": 73.0650,
+    "skills": [
+      "triage",
+      "first_aid",
+      "basic_life_support"
+    ],
+    "lat": 33.72,
+    "lng": 73.065,
     "area": "F-8",
     "phone": "0336-9990011",
     "availability": "available",
@@ -122,9 +164,12 @@
   {
     "id": "V011",
     "name": "Yasir Abbasi",
-    "skills": ["first_aid", "trauma_support"],
-    "lat": 33.6010,
-    "lng": 73.0510,
+    "skills": [
+      "first_aid",
+      "trauma_support"
+    ],
+    "lat": 33.601,
+    "lng": 73.051,
     "area": "Saddar",
     "phone": "0315-4448899",
     "availability": "available",
@@ -134,9 +179,13 @@
   {
     "id": "V012",
     "name": "Asma Jahangir",
-    "skills": ["nursing", "CPR", "triage"],
-    "lat": 33.6830,
-    "lng": 73.0600,
+    "skills": [
+      "nursing",
+      "CPR",
+      "triage"
+    ],
+    "lat": 33.683,
+    "lng": 73.06,
     "area": "G-9",
     "phone": "0300-1110022",
     "availability": "on call",
@@ -146,9 +195,12 @@
   {
     "id": "V013",
     "name": "Ali Raza",
-    "skills": ["CPR", "basic_life_support"],
-    "lat": 24.8100,
-    "lng": 67.0500,
+    "skills": [
+      "CPR",
+      "basic_life_support"
+    ],
+    "lat": 24.81,
+    "lng": 67.05,
     "area": "DHA",
     "phone": "0321-2225566",
     "availability": "available",
@@ -158,9 +210,12 @@
   {
     "id": "V014",
     "name": "Nida Farooq",
-    "skills": ["first_aid", "burn_care"],
-    "lat": 24.8300,
-    "lng": 67.1400,
+    "skills": [
+      "first_aid",
+      "burn_care"
+    ],
+    "lat": 24.83,
+    "lng": 67.14,
     "area": "Korangi",
     "phone": "0334-9993322",
     "availability": "available",
@@ -170,9 +225,12 @@
   {
     "id": "V015",
     "name": "Saad Qureshi",
-    "skills": ["CPR", "triage"],
-    "lat": 24.9000,
-    "lng": 67.2000,
+    "skills": [
+      "CPR",
+      "triage"
+    ],
+    "lat": 24.9,
+    "lng": 67.2,
     "area": "Malir",
     "phone": "0300-8882233",
     "availability": "available",
@@ -182,9 +240,13 @@
   {
     "id": "V016",
     "name": "Tariq Malik",
-    "skills": ["firefighting", "rescue", "first_aid"],
-    "lat": 33.7240,
-    "lng": 73.0720,
+    "skills": [
+      "firefighting",
+      "rescue",
+      "first_aid"
+    ],
+    "lat": 33.724,
+    "lng": 73.072,
     "area": "F-7",
     "phone": "0313-7772211",
     "availability": "available",
@@ -194,9 +256,13 @@
   {
     "id": "V017",
     "name": "Dr. Huma Khan",
-    "skills": ["CPR", "trauma", "triage"],
-    "lat": 33.7100,
-    "lng": 73.0500,
+    "skills": [
+      "CPR",
+      "trauma",
+      "triage"
+    ],
+    "lat": 33.71,
+    "lng": 73.05,
     "area": "I-8",
     "phone": "0345-6663322",
     "availability": "available",
@@ -206,9 +272,12 @@
   {
     "id": "V018",
     "name": "Omar Butt",
-    "skills": ["first_aid", "CPR"],
-    "lat": 33.6080,
-    "lng": 73.0450,
+    "skills": [
+      "first_aid",
+      "CPR"
+    ],
+    "lat": 33.608,
+    "lng": 73.045,
     "area": "Rawalpindi Cantt",
     "phone": "0322-5558833",
     "availability": "available",
@@ -218,9 +287,12 @@
   {
     "id": "V019",
     "name": "Zubair Shah",
-    "skills": ["basic_life_support", "bleeding_control"],
-    "lat": 33.6150,
-    "lng": 73.0600,
+    "skills": [
+      "basic_life_support",
+      "bleeding_control"
+    ],
+    "lat": 33.615,
+    "lng": 73.06,
     "area": "Satellite Town",
     "phone": "0302-3339900",
     "availability": "on call",
@@ -230,9 +302,12 @@
   {
     "id": "V020",
     "name": "Sana Sheikh",
-    "skills": ["nursing", "first_aid"],
-    "lat": 24.9200,
-    "lng": 67.0550,
+    "skills": [
+      "nursing",
+      "first_aid"
+    ],
+    "lat": 24.92,
+    "lng": 67.055,
     "area": "Federal B Area",
     "phone": "0332-1110099",
     "availability": "available",
@@ -242,7 +317,11 @@
   {
     "id": "V021",
     "name": "Dr. Areeba Nadeem",
-    "skills": ["CPR", "basic_life_support", "triage"],
+    "skills": [
+      "CPR",
+      "basic_life_support",
+      "triage"
+    ],
     "lat": 33.6622,
     "lng": 72.9995,
     "area": "H-11",
@@ -254,7 +333,11 @@
   {
     "id": "V022",
     "name": "Bilal Farooq",
-    "skills": ["first_aid", "trauma_support", "bleeding_control"],
+    "skills": [
+      "first_aid",
+      "trauma_support",
+      "bleeding_control"
+    ],
     "lat": 33.6844,
     "lng": 72.9886,
     "area": "F-11",
@@ -266,9 +349,13 @@
   {
     "id": "V023",
     "name": "Mehwish Saleem",
-    "skills": ["first_aid", "burn_care", "rescue"],
-    "lat": 33.6980,
-    "lng": 73.0420,
+    "skills": [
+      "first_aid",
+      "burn_care",
+      "rescue"
+    ],
+    "lat": 33.698,
+    "lng": 73.042,
     "area": "I-10",
     "phone": "0320-6622100",
     "availability": "on call",
