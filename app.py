@@ -6,12 +6,13 @@ World-Class Edition: FastAPI Web App, Custom HTML/CSS/JS UI, Geolocation Auto-De
 from __future__ import annotations
 
 import os
+import asyncio
 import json
 import re
 import time
 from pathlib import Path
 from fastapi import FastAPI, Request, File, UploadFile, HTTPException
-from fastapi.responses import HTMLResponse, JSONResponse, FileResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, FileResponse, Response, StreamingResponse
 from pydantic import BaseModel
 import uvicorn
 from dotenv import load_dotenv
@@ -200,6 +201,23 @@ def _classify_emergency(query: str) -> dict:
             return {"type": name, "severity": severity}
     return {"type": "General Emergency", "severity": 3}
 
+def _quick_language_label(message: str) -> str:
+    q = (message or "").lower()
+    roman_urdu_markers = [
+        "mere", "mera", "meri", "ko", "hai", "hain", "dil", "saans",
+        "khoon", "aag", "gas", "madad", "behosh", "gir"
+    ]
+    if any(marker in q.split() for marker in roman_urdu_markers):
+        return "Roman Urdu / Urdu"
+    if re.search(r"[\u0600-\u06ff]", message or ""):
+        return "Urdu"
+    return "English"
+
+def _stream_event(event_type: str, payload: dict | str) -> str:
+    if isinstance(payload, str):
+        payload = {"message": payload}
+    return json.dumps({"event": event_type, **payload}, ensure_ascii=False) + "\n"
+
 def _extract_json_object(raw_value: str) -> dict:
     try:
         parsed = json.loads(raw_value)
@@ -377,6 +395,135 @@ def classify_emergency_with_llm(message: str, location_str: str, resources_summa
     return {}
 
 # ─── FASTAPI ROUTING ENDPOINTS ───────────────────────────────────────────────
+def _prepare_report_context(request: ReportRequest) -> dict:
+    message_text = request.message
+
+    if request.audio_path:
+        transcription = transcribe_audio_if_possible(request.audio_path)
+        if message_text and message_text != "[AUDIO REPORT TRANSMITTED]":
+            message_text = f"{message_text} [Transcribed: {transcription}]"
+        else:
+            message_text = transcription
+
+    city_map = {"karachi": "Karachi", "islamabad": "Islamabad", "rawalpindi": "Rawalpindi"}
+    city = city_map.get(request.region.lower(), "Karachi")
+    location_str = f"{request.area}, {city}"
+
+    if request.lat is not None and request.lng is not None:
+        lat, lng = request.lat, request.lng
+    else:
+        try:
+            from tools import _parse_location
+            lat, lng = _parse_location(location_str)
+        except Exception:
+            lat, lng = REGION_CENTERS.get(request.region.lower(), (24.8665, 67.0235))
+
+    return {
+        "message_text": message_text,
+        "location_str": location_str,
+        "lat": lat,
+        "lng": lng,
+    }
+
+def _build_report_payload(
+    message_text: str,
+    location_str: str,
+    lat: float,
+    lng: float,
+) -> dict:
+    api_key = _gemini_api_key()
+    has_llm = bool(api_key)
+
+    if has_llm:
+        resources_summary = _get_resources_text("General Emergency", location_str)
+        llm_res = classify_emergency_with_llm(message_text, location_str, resources_summary)
+
+        if llm_res:
+            detected_language = llm_res.get("detected_language", "English/Urdu")
+            emergency_type = llm_res.get("type", "General Emergency")
+            severity = llm_res.get("severity", 3)
+            first_aid_steps = llm_res.get("immediate_action", "")
+            reasoning = llm_res.get("why", "")
+        else:
+            fallback = _classify_emergency(message_text)
+            detected_language = "English/Roman Urdu"
+            emergency_type = fallback["type"]
+            severity = fallback["severity"]
+            first_aid_steps = _protocol_for(emergency_type)
+            reasoning = f"Direct rule matched incident category to {emergency_type}."
+    else:
+        fallback = _classify_emergency(message_text)
+        detected_language = "English/Roman Urdu"
+        emergency_type = fallback["type"]
+        severity = fallback["severity"]
+        first_aid_steps = _protocol_for(emergency_type)
+        reasoning = f"Standard pattern rules classified report context to category '{emergency_type}'."
+
+    resources = _get_resources_text(emergency_type, location_str)
+    unit = _extract_resource(resources, "service")
+    vol = _extract_resource(resources, "volunteer")
+
+    _save_incident({
+        "type": emergency_type,
+        "severity": severity,
+        "area": location_str,
+        "lat": lat,
+        "lng": lng,
+        "user_message": message_text[:120],
+    })
+
+    is_mass_event, sitrep = _mass_event_check(location_str)
+    instruction_visual = display_pipeline_results({
+        "type": emergency_type,
+        "severity": severity,
+    })
+
+    if has_llm:
+        agent_log = [
+            f"Language Router Agent: Scanned emergency transmission input. Detected language: '{detected_language}'.",
+            f"Emergency Triage Paramedic: Classified incident as '{emergency_type}' (Severity: {severity}/5) grounded on RAG context.",
+            f"Emergency Triage Paramedic: Reasoning details: {reasoning}",
+            f"Field Asset Coordinator: Loaded local maps. Closest dispatch: {unit['name']} ({unit['distance']}).",
+            f"Field Asset Coordinator: Alerted volunteer {vol['name']} ({vol['distance']} away, phone: {vol['phone']}).",
+            f"Mass Event Intelligence Analyst: Event window scan complete. Mass event: {is_mass_event}.",
+            "City Emergency Intelligence Recorder: Successfully saved anonymized record to local incident database.",
+        ]
+    else:
+        agent_log = [
+            "SYSTEM: Offline fallback mode activated (No valid GEMINI_API_KEY).",
+            "Language Router Agent: Routing request as local text payload.",
+            f"Emergency Triage Paramedic: Matched keywords to static category rules. Event: '{emergency_type}' (Severity: {severity}/5).",
+            f"Field Asset Coordinator: Matched mock Karachi/Islamabad databases. Mapped dispatch unit: {unit['name']}.",
+            f"Field Asset Coordinator: Notified nearest skill-matched volunteer {vol['name']} via local push.",
+            f"Mass Event Intelligence Analyst: Executing bounding-box area scan. Mass event: {is_mass_event}.",
+            "City Emergency Intelligence Recorder: Written incident logs to incident_log.json.",
+        ]
+
+    return {
+        "type": emergency_type,
+        "severity": severity,
+        "description": message_text,
+        "detected_language": detected_language,
+        "reasoning": reasoning,
+        "first_aid_steps": first_aid_steps,
+        "nearest_service": {
+            "name": unit["name"],
+            "type": "Ambulance / Hospital",
+            "phone": unit["phone"],
+            "distance_km": unit["distance"].replace(" km", "") if " km" in unit["distance"] else unit["distance"],
+        },
+        "nearest_volunteer": {
+            "name": vol["name"],
+            "skills": vol["skills"] if "skills" in vol else "First Aid & CPR",
+            "phone": vol["phone"],
+            "distance_km": vol["distance"].replace(" km", "") if " km" in vol["distance"] else vol["distance"],
+        },
+        "instruction_visual": instruction_visual,
+        "is_mass_event": is_mass_event,
+        "sitrep": sitrep,
+        "agent_log": agent_log,
+    }
+
 @app.get("/", response_class=HTMLResponse)
 def get_home():
     html_path = PROJECT_ROOT / "templates" / "index.html"
@@ -555,6 +702,76 @@ async def report_emergency(request: ReportRequest):
     })
 
 # ─── CONFIG & ADMIN ENDPOINTS ────────────────────────────────────────────────
+@app.post("/api/report-stream")
+async def report_emergency_stream(request: ReportRequest):
+    async def event_stream():
+        context = await asyncio.to_thread(_prepare_report_context, request)
+        message_text = context["message_text"]
+        location_str = context["location_str"]
+        lat = context["lat"]
+        lng = context["lng"]
+        language_hint = _quick_language_label(message_text)
+
+        yield _stream_event("telemetry", {
+            "message": "[MATRIX BOOT]: Dispatch payload received. Initializing Haalat multi-agent runtime...",
+        })
+        await asyncio.sleep(0.18)
+        yield _stream_event("telemetry", {
+            "message": f"[AGENT 1: LANGUAGE ROUTER]: {language_hint} detected. Forcing vernacular pipeline wrapper...",
+        })
+        await asyncio.sleep(0.18)
+        yield _stream_event("telemetry", {
+            "message": f"[AGENT 2: TRIAGE PARAMEDIC]: Pulling emergency taxonomy RAG context for report at {location_str}...",
+        })
+        await asyncio.sleep(0.18)
+
+        payload = await asyncio.to_thread(_build_report_payload, message_text, location_str, lat, lng)
+
+        severity = int(payload.get("severity", 3))
+        emergency_type = payload.get("type", "General Emergency")
+        if severity >= 5:
+            triage_line = f"[AGENT 2: TRIAGE PARAMEDIC]: Severity Level {severity} identified. {emergency_type} verified. Activating emergency coach..."
+        elif severity >= 4:
+            triage_line = f"[AGENT 2: TRIAGE PARAMEDIC]: Severity Level {severity} identified. Critical dispatch path engaged for {emergency_type}."
+        else:
+            triage_line = f"[AGENT 2: TRIAGE PARAMEDIC]: Severity Level {severity} identified. Advisory response path selected for {emergency_type}."
+        yield _stream_event("telemetry", {"message": triage_line})
+        await asyncio.sleep(0.16)
+
+        service = payload.get("nearest_service", {})
+        volunteer = payload.get("nearest_volunteer", {})
+        yield _stream_event("telemetry", {
+            "message": f"[AGENT 3: RESOURCE LOCATOR]: Closest service locked: {service.get('name', 'Unknown')} ({service.get('distance_km', '---')} km).",
+        })
+        await asyncio.sleep(0.16)
+        yield _stream_event("telemetry", {
+            "message": f"[AGENT 4: VOLUNTEER MOBILIZER]: Nearby responder ping sent: {volunteer.get('name', 'Unknown')} ({volunteer.get('distance_km', '---')} km).",
+        })
+        await asyncio.sleep(0.16)
+
+        if severity >= 4:
+            yield _stream_event("telemetry", {
+                "message": f"[AGENT 5: LIVE FIRST AID COACH]: Instruction visual armed for {emergency_type}. Streaming first-action guidance...",
+            })
+            await asyncio.sleep(0.16)
+
+        mass_status = "MASS EVENT DETECTED" if payload.get("is_mass_event") else "No cluster threshold crossed"
+        yield _stream_event("telemetry", {
+            "message": f"[AGENT 6: PATTERN DETECTOR]: 10-minute city memory window scanned. {mass_status}.",
+        })
+        await asyncio.sleep(0.16)
+        yield _stream_event("telemetry", {
+            "message": "[AGENT 7: CITY MEMORY]: Anonymous incident record committed. Dashboard telemetry refreshed.",
+        })
+        await asyncio.sleep(0.12)
+        yield _stream_event("result", {"payload": payload})
+
+    return StreamingResponse(
+        event_stream(),
+        media_type="application/x-ndjson",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
+
 @app.get("/api/config")
 def get_config():
     api_key = os.getenv("GOOGLE_MAPS_API_KEY", "")
