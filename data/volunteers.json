@@ -238,5 +238,41 @@
     "availability": "available",
     "response_time_minutes": 5,
     "region": "karachi"
+  },
+  {
+    "id": "V021",
+    "name": "Dr. Areeba Nadeem",
+    "skills": ["CPR", "basic_life_support", "triage"],
+    "lat": 33.6622,
+    "lng": 72.9995,
+    "area": "H-11",
+    "phone": "0300-7711200",
+    "availability": "available",
+    "response_time_minutes": 4,
+    "region": "islamabad"
+  },
+  {
+    "id": "V022",
+    "name": "Bilal Farooq",
+    "skills": ["first_aid", "trauma_support", "bleeding_control"],
+    "lat": 33.6844,
+    "lng": 72.9886,
+    "area": "F-11",
+    "phone": "0335-4411900",
+    "availability": "available",
+    "response_time_minutes": 5,
+    "region": "islamabad"
+  },
+  {
+    "id": "V023",
+    "name": "Mehwish Saleem",
+    "skills": ["first_aid", "burn_care", "rescue"],
+    "lat": 33.6980,
+    "lng": 73.0420,
+    "area": "I-10",
+    "phone": "0320-6622100",
+    "availability": "on call",
+    "response_time_minutes": 6,
+    "region": "islamabad"
   }
 ]

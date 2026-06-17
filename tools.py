@@ -37,14 +37,24 @@ KNOWN_LOCATIONS = {
     "islamabad": (33.7200, 73.0700),
     "g-8": (33.6933, 73.0586),
     "g-9": (33.6830, 73.0600),
+    "g-11": (33.6675, 73.0007),
+    "g-13": (33.6500, 72.9639),
     "f-8": (33.7200, 73.0650),
     "f-7": (33.7240, 73.0720),
+    "f-11": (33.6844, 72.9886),
     "i-8": (33.7100, 73.0500),
+    "i-9": (33.6840, 73.0450),
     "h-8": (33.6880, 73.0650),
+    "h-9": (33.6847, 73.0366),
+    "h-11": (33.6622, 72.9995),
+    "h-12": (33.6487, 72.9950),
     "g-10": (33.6720, 73.0700),
     "f-10": (33.6950, 73.0620),
     "e-7": (33.7280, 73.0800),
+    "e-11": (33.6994, 72.9744),
+    "d-12": (33.7048, 72.9584),
     "i-10": (33.6980, 73.0420),
+    "i-11": (33.6715, 73.0078),
     "shifa hospital": (33.7172, 73.0593),
     "pims": (33.6933, 73.0586),
 }
@@ -56,8 +66,11 @@ REGION_AREAS = {
         "Federal B Area", "Soldier Bazaar", "Garden East", "Garden West"
     ],
     "islamabad": [
-        "Blue Area", "G-8", "G-9", "F-8", "F-7", "F-10", "I-8", "H-8",
-        "G-10", "E-7", "I-10"
+        "Blue Area", "G-8", "G-9", "G-10", "G-11", "G-13",
+        "F-7", "F-8", "F-10", "F-11",
+        "E-7", "E-11", "D-12",
+        "H-8", "H-9", "H-11", "H-12",
+        "I-8", "I-9", "I-10", "I-11"
     ],
     "rawalpindi": [
         "Saddar", "Rawalpindi Cantt", "Westridge", "Committee Chowk",
@@ -108,10 +121,20 @@ def _parse_location(user_location: str) -> tuple[float, float]:
     if coordinate_match:
         return float(coordinate_match.group(1)), float(coordinate_match.group(2))
     normalized = _clean_location(user_location)
-    if normalized in KNOWN_LOCATIONS:
-        return KNOWN_LOCATIONS[normalized]
-    for place_name, coordinates in KNOWN_LOCATIONS.items():
-        if place_name in normalized:
+    cleaned_known_locations = {
+        _clean_location(place_name): coordinates
+        for place_name, coordinates in KNOWN_LOCATIONS.items()
+    }
+    if normalized in cleaned_known_locations:
+        return cleaned_known_locations[normalized]
+    for place_name, coordinates in sorted(
+        KNOWN_LOCATIONS.items(),
+        key=lambda item: len(_clean_location(item[0])),
+        reverse=True,
+    ):
+        if place_name in REGION_CENTERS:
+            continue
+        if _clean_location(place_name) in normalized:
             return coordinates
     for region_name, coords in REGION_CENTERS.items():
         if region_name in normalized:

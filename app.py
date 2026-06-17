@@ -157,6 +157,10 @@ class ReportRequest(BaseModel):
     lat: float | None = None
     lng: float | None = None
 
+class UpdateAlertRequest(BaseModel):
+    alert_id: str
+    status: str
+
 # ─── DATABASE HELPERS ────────────────────────────────────────────────────────
 def _load_incidents():
     path = PROJECT_ROOT / "incident_log.json"
@@ -172,6 +176,99 @@ def _save_incident(incident: dict):
     incident["time"] = time.strftime("%H:%M")
     incidents.append(incident)
     path.write_text(json.dumps(incidents, indent=2, ensure_ascii=False), encoding="utf-8")
+
+def _alerts_path() -> Path:
+    return PROJECT_ROOT / "active_alerts.json"
+
+def _load_alerts() -> list[dict]:
+    path = _alerts_path()
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError):
+        data = []
+    return data if isinstance(data, list) else []
+
+def _save_alerts(alerts: list[dict]) -> None:
+    _alerts_path().write_text(json.dumps(alerts, indent=2, ensure_ascii=False), encoding="utf-8")
+
+def _timeline_step(label: str, detail: str) -> dict:
+    return {"time": time.strftime("%H:%M:%S"), "label": label, "detail": detail}
+
+def _create_active_alert(
+    emergency_type: str,
+    severity: int,
+    area: str,
+    lat: float,
+    lng: float,
+    volunteer: dict,
+    service: dict,
+) -> dict:
+    alert = {
+        "id": f"A{int(time.time() * 1000)}",
+        "created_at": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "status": "alerted",
+        "emergency_type": emergency_type,
+        "severity": severity,
+        "area": area,
+        "lat": lat,
+        "lng": lng,
+        "volunteer_name": volunteer.get("name", "Nearest responder"),
+        "volunteer_phone": volunteer.get("phone", "---"),
+        "volunteer_distance_km": volunteer.get("distance_km", "---"),
+        "service_name": service.get("name", "Nearest service"),
+        "service_phone": service.get("phone", "---"),
+        "timeline": [
+            _timeline_step("Reported", f"Emergency report received from {area}."),
+            _timeline_step("Classified", f"{emergency_type} classified at severity {severity}/5."),
+            _timeline_step("Volunteer Alerted", f"{volunteer.get('name', 'Nearest responder')} pinged for response."),
+        ],
+    }
+    alerts = _load_alerts()
+    alerts.append(alert)
+    _save_alerts(alerts)
+    return alert
+
+def _update_alert_status(alert_id: str, status: str) -> dict | None:
+    labels = {
+        "accepted": "Volunteer Accepted",
+        "en_route": "Responder En Route",
+        "arrived": "Responder Arrived",
+        "resolved": "Incident Resolved",
+        "rejected": "Volunteer Rejected",
+    }
+    alerts = _load_alerts()
+    updated = None
+    for alert in alerts:
+        if alert.get("id") == alert_id:
+            alert["status"] = status
+            alert.setdefault("timeline", []).append(
+                _timeline_step(labels.get(status, status.title()), f"Alert marked as {status.replace('_', ' ')}.")
+            )
+            updated = alert
+            break
+    if updated:
+        _save_alerts(alerts)
+    return updated
+
+def _risk_memory(area: str, emergency_type: str) -> dict:
+    incidents = _load_incidents()
+    area_key = (area or "").split(",")[0].strip().lower()
+    type_key = (emergency_type or "").lower()
+    area_matches = [i for i in incidents if area_key and area_key in str(i.get("area", "")).lower()]
+    type_matches = [i for i in area_matches if type_key and type_key in str(i.get("type", "")).lower()]
+    high_severity = [i for i in area_matches if int(i.get("severity", 0) or 0) >= 4]
+    risk_level = "elevated" if len(type_matches) >= 2 or len(high_severity) >= 3 else "watch" if area_matches else "new"
+    return {
+        "area": area,
+        "risk_level": risk_level,
+        "area_incidents": len(area_matches),
+        "same_type_incidents": len(type_matches),
+        "high_severity_incidents": len(high_severity),
+        "summary": (
+            f"{area} has {len(area_matches)} remembered incident(s), "
+            f"{len(type_matches)} related to {emergency_type}, and {len(high_severity)} high-severity case(s)."
+        ),
+    }
 
 def _demo_incidents():
     return [
@@ -303,13 +400,17 @@ def _extract_resource(text: str, label: str) -> dict[str, str]:
         return {"name": "---", "phone": "---", "distance": "---"}
     phone = "---"
     distance = "---"
-    pm = re.search(r"Phone:\s*([^,\n]+)", body)
+    skills = "---"
+    pm = re.search(r"Phone:\s*([0-9+\-() ]+)", body)
     if pm: phone = pm.group(1).strip()
     dm = re.search(r"([\d.]+)\s*km", body)
     if dm: distance = f"{dm.group(1)} km"
+    sm = re.search(r"Skills:\s*([^.\n]+)", body)
+    if sm: skills = sm.group(1).strip()
     name = re.split(r",\s*(?:Phone|Distance):", body, maxsplit=1)[0]
     name = re.sub(r"^Nearest (?:service|matching volunteer):\s*", "", name, flags=re.IGNORECASE)
-    return {"name": name.strip(), "phone": phone, "distance": distance}
+    name = re.sub(r"\s*\([^)]*\).*", "", name).strip()
+    return {"name": name, "phone": phone, "distance": distance, "skills": skills}
 
 def _protocol_for(emergency_type: str) -> str:
     snippets = retrieve_protocol_context(emergency_type)
@@ -462,6 +563,18 @@ def _build_report_payload(
     resources = _get_resources_text(emergency_type, location_str)
     unit = _extract_resource(resources, "service")
     vol = _extract_resource(resources, "volunteer")
+    service_payload = {
+        "name": unit["name"],
+        "type": "Ambulance / Hospital",
+        "phone": unit["phone"],
+        "distance_km": unit["distance"].replace(" km", "") if " km" in unit["distance"] else unit["distance"],
+    }
+    volunteer_payload = {
+        "name": vol["name"],
+        "skills": vol["skills"] if "skills" in vol else "First Aid & CPR",
+        "phone": vol["phone"],
+        "distance_km": vol["distance"].replace(" km", "") if " km" in vol["distance"] else vol["distance"],
+    }
 
     _save_incident({
         "type": emergency_type,
@@ -470,6 +583,7 @@ def _build_report_payload(
         "lat": lat,
         "lng": lng,
         "user_message": message_text[:120],
+        "status": "classified",
     })
 
     is_mass_event, sitrep = _mass_event_check(location_str)
@@ -477,6 +591,23 @@ def _build_report_payload(
         "type": emergency_type,
         "severity": severity,
     })
+    active_alert = None
+    if int(severity or 0) >= 4:
+        active_alert = _create_active_alert(
+            emergency_type,
+            int(severity),
+            location_str,
+            lat,
+            lng,
+            volunteer_payload,
+            service_payload,
+        )
+    lifecycle = active_alert.get("timeline", []) if active_alert else [
+        _timeline_step("Reported", f"Emergency report received from {location_str}."),
+        _timeline_step("Classified", f"{emergency_type} classified at severity {severity}/5."),
+        _timeline_step("Advisory Mode", "No immediate responder dispatch required by current severity."),
+    ]
+    risk_memory = _risk_memory(location_str, emergency_type)
 
     if has_llm:
         agent_log = [
@@ -506,18 +637,12 @@ def _build_report_payload(
         "detected_language": detected_language,
         "reasoning": reasoning,
         "first_aid_steps": first_aid_steps,
-        "nearest_service": {
-            "name": unit["name"],
-            "type": "Ambulance / Hospital",
-            "phone": unit["phone"],
-            "distance_km": unit["distance"].replace(" km", "") if " km" in unit["distance"] else unit["distance"],
-        },
-        "nearest_volunteer": {
-            "name": vol["name"],
-            "skills": vol["skills"] if "skills" in vol else "First Aid & CPR",
-            "phone": vol["phone"],
-            "distance_km": vol["distance"].replace(" km", "") if " km" in vol["distance"] else vol["distance"],
-        },
+        "nearest_service": service_payload,
+        "nearest_volunteer": volunteer_payload,
+        "coordination_status": active_alert.get("status", "advisory") if active_alert else "advisory",
+        "active_alert": active_alert,
+        "lifecycle": lifecycle,
+        "risk_memory": risk_memory,
         "instruction_visual": instruction_visual,
         "is_mass_event": is_mass_event,
         "sitrep": sitrep,
@@ -805,6 +930,24 @@ def get_admin_services():
         return services
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/alerts")
+def get_alerts():
+    return _load_alerts()
+
+@app.get("/api/admin/alerts")
+def get_admin_alerts():
+    return _load_alerts()
+
+@app.post("/api/admin/update-alert")
+def update_admin_alert(request: UpdateAlertRequest):
+    allowed = {"accepted", "en_route", "arrived", "resolved", "rejected"}
+    if request.status not in allowed:
+        raise HTTPException(status_code=400, detail=f"Invalid status. Allowed: {sorted(allowed)}")
+    updated = _update_alert_status(request.alert_id, request.status)
+    if not updated:
+        raise HTTPException(status_code=404, detail="Alert not found.")
+    return {"status": "success", "alert": updated, "alerts": _load_alerts()}
 
 @app.post("/api/admin/clear-incidents")
 def clear_incidents():

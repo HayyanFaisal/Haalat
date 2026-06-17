@@ -1550,6 +1550,56 @@
       opacity: 0.75;
     }
 
+    .coordination-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .coordination-step {
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      border-radius: 8px;
+      padding: 9px 10px;
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .coordination-step strong {
+      display: block;
+      color: var(--accent-primary);
+      font-family: var(--font-title);
+      font-size: 10px;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+
+    .risk-memory-card {
+      background: linear-gradient(135deg, rgba(255, 179, 0, 0.08), rgba(0, 176, 255, 0.035));
+      border: 1px solid rgba(255, 179, 0, 0.24);
+      border-radius: 8px;
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.55;
+      color: #f8fafc;
+    }
+
+    .risk-memory-card .risk-title {
+      font-family: var(--font-title);
+      color: var(--warning);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    @media(max-width: 700px) {
+      .coordination-strip {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .console-line {
       animation: consoleFade 0.35s forwards, lineGlow 1.2s ease-out;
     }
@@ -1934,6 +1984,9 @@
               </div>
               <img class="instruction-visual-img" id="instruction-visual-img" alt="Animated amber emergency radar scan loop" src="/instruction-assets/default-radar-alert.svg">
             </div>
+
+            <div id="coordination-summary"></div>
+            <div id="risk-memory-summary"></div>
           </div>
         </div>
 
@@ -2095,6 +2148,8 @@
     const instructionVisualFrame = document.getElementById('instruction-visual-frame');
     const instructionVisualImg = document.getElementById('instruction-visual-img');
     const instructionVisualTitle = document.getElementById('instruction-visual-title');
+    const coordinationSummary = document.getElementById('coordination-summary');
+    const riskMemorySummary = document.getElementById('risk-memory-summary');
 
     const unsupportedModal = document.getElementById('unsupported-modal');
     const unsupportedModalText = document.getElementById('unsupported-modal-text');
@@ -2133,6 +2188,31 @@
       instructionVisualImg.src = `${visualState.gif_url}?pulse=${Date.now()}`;
       instructionVisualFrame.className = `instruction-visual-frame active ${tone}`;
       triggerImpactBurst(tone === 'critical');
+    }
+
+    function buildLifecycleHtml(lifecycle = []) {
+      if (!Array.isArray(lifecycle) || lifecycle.length === 0) return "";
+      return `
+        <div class="coordination-strip" style="margin-top:10px;">
+          ${lifecycle.slice(0, 6).map(step => `
+            <div class="coordination-step">
+              <strong>${step.label || 'Status'}</strong>
+              <span>${step.detail || ''}</span>
+              <div style="color:var(--text-muted); margin-top:4px;">${step.time || ''}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function buildRiskMemoryHtml(riskMemory) {
+      if (!riskMemory) return "";
+      return `
+        <div class="risk-memory-card" style="margin-top:10px;">
+          <div class="risk-title">City Memory Risk: ${(riskMemory.risk_level || 'watch').toUpperCase()}</div>
+          <div>${riskMemory.summary || 'No city-memory pattern available yet.'}</div>
+        </div>
+      `;
     }
 
     async function fetchConfig() {
@@ -2675,6 +2755,8 @@
           }
 
           // Render updated dispatch card
+          const lifecycleHtml = buildLifecycleHtml(data.lifecycle);
+          const riskMemoryHtml = buildRiskMemoryHtml(data.risk_memory);
           cardDiv.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
               <strong style="color:var(--accent-primary); font-size:12.5px;"><i class="fa-solid fa-circle-check"></i> Dispatch Mapped</strong>
@@ -2688,6 +2770,8 @@
             </div>
 
             ${immediateActionHtml}
+            ${lifecycleHtml}
+            ${riskMemoryHtml}
 
             <div class="terminal-card-embedded" id="${cardId}-terminal"></div>
           `;
@@ -2700,6 +2784,8 @@
           document.getElementById('severity-label').textContent = triageStatusText;
           document.getElementById('results-panel').style.display = 'block';
           updateInstructionVisual(data.instruction_visual);
+          coordinationSummary.innerHTML = buildLifecycleHtml(data.lifecycle);
+          riskMemorySummary.innerHTML = buildRiskMemoryHtml(data.risk_memory);
 
           // Service Card matches styling
           const serviceCard = document.getElementById('service-card');

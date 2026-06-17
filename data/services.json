@@ -178,5 +178,29 @@
     "services": ["poison control", "chemical detox", "antidote bank"],
     "24hr": true,
     "region": "karachi"
+  },
+  {
+    "id": "S016",
+    "name": "Rescue 1122 Response Post - H-11",
+    "type": "rescue",
+    "lat": 33.6622,
+    "lng": 72.9995,
+    "area": "H-11",
+    "phone": "1122",
+    "services": ["ambulance", "rescue", "trauma", "fire"],
+    "24hr": true,
+    "region": "islamabad"
+  },
+  {
+    "id": "S017",
+    "name": "Maroof International Hospital - F-10/F-11",
+    "type": "hospital",
+    "lat": 33.6930,
+    "lng": 72.9915,
+    "area": "F-10/F-11",
+    "phone": "051-2222920",
+    "services": ["trauma", "cardiac", "emergency", "pediatrics"],
+    "24hr": true,
+    "region": "islamabad"
   }
 ]

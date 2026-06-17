@@ -509,6 +509,32 @@
             opacity: 0.65;
         }
 
+        .alert-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            border: 1px solid rgba(255, 179, 0, 0.28);
+            color: var(--warning);
+            background: rgba(255, 179, 0, 0.08);
+        }
+
+        .alert-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .btn-mini {
+            padding: 0.32rem 0.55rem;
+            font-size: 0.7rem;
+            border-radius: 6px;
+        }
+
         @media (prefers-reduced-motion: reduce) {
             *,
             *::before,
@@ -621,12 +647,37 @@
                 </div>
             </div>
         </div>
+
+        <div class="dashboard-box">
+            <div class="box-header">
+                <h2><i class="fa-solid fa-route" style="color: var(--warning);"></i> Closed-Loop Volunteer Dispatch</h2>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Alert</th>
+                            <th>Incident</th>
+                            <th>Responder</th>
+                            <th>Status</th>
+                            <th>Lifecycle Control</th>
+                        </tr>
+                    </thead>
+                    <tbody id="alerts-table-body">
+                        <tr>
+                            <td colspan="5" style="text-align:center; color: var(--text-muted);">No active volunteer alerts yet.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <!-- Telemetry Sync JS -->
     <script>
         const incidentsTableBody = document.getElementById('incidents-table-body');
         const volunteerListBody = document.getElementById('volunteer-list-body');
+        const alertsTableBody = document.getElementById('alerts-table-body');
         const clearIncidentsBtn = document.getElementById('clear-incidents-btn');
         
         // Counter Elements
@@ -651,6 +702,10 @@
                 const availableCount = volunteers.filter(v => v.availability === 'available').length;
                 statVolunteers.textContent = `${availableCount}/${volunteers.length}`;
                 renderVolunteers(volunteers);
+
+                const alertRes = await fetch('/api/admin/alerts');
+                const alerts = await alertRes.json();
+                renderAlerts(alerts);
 
             } catch (err) {
                 console.error("Diagnostics sync failure", err);
@@ -722,6 +777,51 @@
             }).join('');
         }
 
+        function renderAlerts(alerts) {
+            if (!alerts.length) {
+                alertsTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: var(--text-muted);">No active volunteer alerts yet.</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            alertsTableBody.innerHTML = alerts.slice().reverse().map(alert => {
+                const latest = (alert.timeline || []).slice(-1)[0];
+                const status = (alert.status || 'alerted').replace('_', ' ');
+                return `
+                    <tr>
+                        <td>
+                            <div style="font-weight:700;">${alert.id}</div>
+                            <div style="font-size:0.72rem; color:var(--text-muted);">${alert.created_at || ''}</div>
+                        </td>
+                        <td>
+                            <div>${alert.emergency_type}</div>
+                            <span class="badge ${alert.severity >= 5 ? 'badge-danger' : 'badge-warning'}">Severity ${alert.severity}</span>
+                            <div style="font-size:0.72rem; color:var(--text-muted); margin-top:4px;">${alert.area}</div>
+                        </td>
+                        <td>
+                            <div>${alert.volunteer_name || 'Responder'}</div>
+                            <div style="font-size:0.72rem; color:var(--text-muted);">${alert.volunteer_distance_km || '---'} km | ${alert.volunteer_phone || '---'}</div>
+                        </td>
+                        <td>
+                            <span class="alert-status">${status}</span>
+                            <div style="font-size:0.72rem; color:var(--text-muted); margin-top:5px;">${latest ? latest.label : ''}</div>
+                        </td>
+                        <td>
+                            <div class="alert-actions">
+                                <button class="btn btn-mini" onclick="updateAlertStatus('${alert.id}', 'accepted')">Accept</button>
+                                <button class="btn btn-mini" onclick="updateAlertStatus('${alert.id}', 'en_route')">En Route</button>
+                                <button class="btn btn-mini" onclick="updateAlertStatus('${alert.id}', 'arrived')">Arrived</button>
+                                <button class="btn btn-mini btn-danger" onclick="updateAlertStatus('${alert.id}', 'resolved')">Resolve</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
         // Toggle responder availability
         async function toggleVolunteerStatus(id) {
             try {
@@ -729,6 +829,21 @@
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ id })
+                });
+                if (response.ok) {
+                    fetchTelemetry();
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function updateAlertStatus(alertId, status) {
+            try {
+                const response = await fetch('/api/admin/update-alert', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ alert_id: alertId, status })
                 });
                 if (response.ok) {
                     fetchTelemetry();
