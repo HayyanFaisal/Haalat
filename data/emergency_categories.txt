@@ -1,0 +1,83 @@
+CATEGORY: Cardiac Event
+SEVERITY: 5
+KEYWORDS: [dil, heart, cardiac, chest, behosh, unconscious, cpr, pulse, saans nahi, dil ka dorah, seene mein dard, dharkan, heart attack]
+DESCRIPTION: Patient has sudden chest pain, is gasping for breath, or has collapsed and is unresponsive.
+FIRST_RESPONSE: Perform CPR immediately. Compress the chest at 100-120 bpm, 2 inches deep. Get an AED.
+
+CATEGORY: Severe Bleeding
+SEVERITY: 4
+KEYWORDS: [bleed, blood, khoon, zakhm, cut, wound, gehra, chot, bleeding, hemorrhage]
+DESCRIPTION: Deep arterial or venous laceration with steady or spurting blood loss that does not stop with light pressure.
+FIRST_RESPONSE: Apply direct pressure using a clean cloth. Elevate the limb. Prepare a tourniquet if bleeding is arterial and uncontrollable.
+
+CATEGORY: Gas Leak
+SEVERITY: 4
+KEYWORDS: [gas, smell, boo, cylinder, sui gas, dhuaan, saans mein jalan, leak, explosion, gas leak, gas cylinder]
+DESCRIPTION: Odor of natural gas or LPG present in an enclosed space, causing coughing, eye irritation, or risk of combustion.
+FIRST_RESPONSE: Do not turn on lights or appliances. Evacuate the area, open windows, and isolate the gas supply valve.
+
+CATEGORY: Burn Injury
+SEVERITY: 3
+KEYWORDS: [burn, jal, aag, fire, hot water, steam, oil, chemical, tezaab, scald]
+DESCRIPTION: Thermal or chemical burns covering skin layers, causing redness, blisters, or charring.
+FIRST_RESPONSE: Run cool water over the burn for 10-15 minutes. Do not apply ice, butter, or paste. Cover with a clean damp cloth.
+
+CATEGORY: Drowning
+SEVERITY: 5
+KEYWORDS: [drown, pani, water, doob, river, sea, swimming, drowning, submersion]
+DESCRIPTION: Victim submerged in water, unresponsive or struggling to breathe.
+FIRST_RESPONSE: Pull the victim out of the water safely. Clear the airway and immediately begin rescue breaths followed by chest compressions.
+
+CATEGORY: Respiratory Emergency
+SEVERITY: 4
+KEYWORDS: [asthma, saans, choke, suffocate, asthma attack, saans band, damma, phans gaya]
+DESCRIPTION: Severe difficulty in breathing, choking on food or objects, or sudden asthma attack.
+FIRST_RESPONSE: Clear the airway. If choking, perform back blows or abdominal thrusts. Encourage calm, slow breaths for asthma.
+
+CATEGORY: Road Accident
+SEVERITY: 4
+KEYWORDS: [accident, car, bike, collision, crash, road accident, chot, trauma, hadsa]
+DESCRIPTION: Vehicle crash leading to trauma, bone fractures, or physical injuries.
+FIRST_RESPONSE: Ensure scene safety first. Do not move the victim unless there is an immediate fire hazard. Keep the neck stabilized.
+
+CATEGORY: Fire Emergency
+SEVERITY: 4
+KEYWORDS: [fire, aag, blast, explosion, smoke, dhuaan, building fire]
+DESCRIPTION: Fire breakout in a building or outdoor area creating severe burn risk and smoke inhalation.
+FIRST_RESPONSE: Evacuate immediately. Stay low to avoid smoke. Call the fire department.
+
+CATEGORY: Building Collapse
+SEVERITY: 5
+KEYWORDS: [collapse, malba, debris, building, chat, gir gaya, landslide]
+DESCRIPTION: Structural collapse of a building or roof trapping individuals under debris.
+FIRST_RESPONSE: Call search and rescue services immediately. Do not enter unstable structures. Clear perimeter.
+
+CATEGORY: Violence / Assault
+SEVERITY: 4
+KEYWORDS: [fight, larae, gun, churi, knife, attack, assault, robbery, dacaiti, maar peet]
+DESCRIPTION: Active physical violence, gunshot wound, or stabbing victim.
+FIRST_RESPONSE: Ensure personal safety. Call police. Apply pressure to any bleeding wounds. Keep victim calm.
+
+CATEGORY: Poisoning
+SEVERITY: 4
+KEYWORDS: [poison, tezaab, zehar, toxic, chemical intake, swallowed, chemical ingestion]
+DESCRIPTION: Ingestion or exposure to toxic chemicals, poison, or drugs.
+FIRST_RESPONSE: Identify the substance. Do not induce vomiting unless advised by medical professionals. Flush skin/eyes if contact occurred.
+
+CATEGORY: Stroke
+SEVERITY: 5
+KEYWORDS: [stroke, falij, paralysis, numbness, face drop, speech slurred, weakness]
+DESCRIPTION: Sudden weakness or numbness in face/arms, slurred speech, or loss of balance.
+FIRST_RESPONSE: Note the time symptoms started. Keep patient calm and resting. Call ambulance immediately.
+
+CATEGORY: Diabetic Emergency
+SEVERITY: 3
+KEYWORDS: [diabetes, sugar, behoshi, dizzy, shivering, sugar low, sugar high]
+DESCRIPTION: Severe low or high blood sugar levels causing confusion, shaking, sweating, or unconsciousness.
+FIRST_RESPONSE: If conscious, give fast-acting sugar (fruit juice, candy). If unconscious, place in recovery position and call help.
+
+CATEGORY: Childbirth Emergency
+SEVERITY: 4
+KEYWORDS: [delivery, bacha, baby, labor, pregnant, umeed se, delivery pain, labor pain]
+DESCRIPTION: Active labor, water broken, or emergency delivery outside a hospital.
+FIRST_RESPONSE: Support the mother in a comfortable reclined position. Prepare clean sheets. Support the baby's head as it emerges.

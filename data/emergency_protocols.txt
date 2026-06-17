@@ -1,0 +1,82 @@
+Protocol: Cardiac Event / Heart Attack
+1. Assess responsiveness: Shake shoulders and shout "Are you okay?". Check if the person is responsive.
+2. Check breathing: Look for chest rising for no more than 10 seconds. Check if they are breathing normally.
+3. Call for help: Direct someone to call 1122 or 115 immediately and retrieve an Automated External Defibrillator (AED) if available.
+4. CPR Compressions: Place your hands in the center of their chest. Push hard and fast (100 to 120 compressions per minute, at least 2 inches deep). Use the beat of the song "Staying Alive" as a guide.
+5. Rescue Breaths: If trained, give 2 breaths after every 30 compressions. If not trained, perform hands-only CPR. Keep compressing the chest continuously until medical help arrives or the patient wakes up.
+6. AED Usage: Turn on the AED and follow the voice prompts. Apply pads to the patient's bare chest. Do not touch the patient during shock delivery.
+Contraindications: Do not perform chest compressions if the victim is conscious and breathing normally. Do not delay compressions to wait for an AED.
+
+Protocol: Severe Bleeding
+1. Safety First: Wear protective gloves if available to avoid contact with blood.
+2. Direct Pressure: Place a sterile dressing or clean cloth directly over the wound. Push firmly with both hands.
+3. Elevation: Elevate the injured area above the level of the heart if possible to reduce pressure.
+4. Tourniquet: For limbs, if direct pressure does not stop the bleeding, apply a tourniquet 2-3 inches above the wound (never on a joint). Tighten it until the bleeding stops completely. Write the exact application time on the tourniquet.
+5. Prevent Shock: Keep the patient warm and lying flat with their legs raised slightly.
+6. Monitor: Ensure the dressing is not completely soaked. Do not remove the original cloth if soaked; add more layers on top and keep pressure applied.
+Contraindications: Do not pull out embedded objects from the wound, as this may cause severe bleeding. Pressure should be applied around the object, not directly on it.
+
+Protocol: Gas Leak
+1. Evacuate Immediately: Order all occupants to exit the building to fresh air.
+2. No Sparks: Do not use switches, matches, or cell phones inside the leak area. Even a tiny spark can cause a massive explosion.
+3. Open Openings: If safe, open doors and windows to ventilate the area and dilute the gas.
+4. Shut Valves: Close the main gas regulator valve outside the building.
+5. Alert: Call the gas company hotline and fire services from a safe distance.
+6. Await Clearance: Do not re-enter the building until emergency responders declare it safe.
+Contraindications: Do not turn appliances or lights ON or OFF, as switching can trigger electrical sparks. Do not start cars near the leak.
+
+Protocol: Burn Injury
+1. Cool the Burn: Run cool (not cold) tap water over the burn for 10-15 minutes. This stops the burning process and relieves pain.
+2. Remove Tight Items: Gently remove rings, bracelets, or tight clothing from the burned area before it starts to swell.
+3. Cover the Burn: Cover the area loosely with a sterile, non-adhesive bandage or a clean plastic wrap.
+4. Elevate: If the burn is on a limb, keep it elevated to reduce swelling.
+5. Pain Management: Administer mild pain relief if available. Seek medical attention if the burn covers a large area, is on the face, hands, feet, groin, or is deep (charred or white skin).
+Contraindications: Do not use ice, cold water, butter, toothpaste, or oil on burns. Do not pop blisters. Do not remove clothing stuck to the burn.
+
+Protocol: Drowning
+1. Safe Rescue: Get the victim out of the water safely without putting yourself in danger.
+2. Check Responsiveness & Airway: Tilt the head back, lift the chin, and check for breathing.
+3. Give Rescue Breaths: If the victim is not breathing, give 5 initial rescue breaths immediately to oxygenate the lungs.
+4. Begin CPR: Perform 30 chest compressions followed by 2 rescue breaths. Continue this cycle (30:2) until help arrives.
+5. Keep Warm: Remove wet clothing and dry the victim. Wrap them in warm blankets to prevent hypothermia.
+Contraindications: Do not perform abdominal thrusts (Heimlich maneuver) to clear water, as this increases the risk of vomiting and lung inhalation.
+
+Protocol: Choking (Adult)
+1. Confirm Choking: Ask "Are you choking?". If they can speak or cough, encourage them to keep coughing.
+2. Give Back Blows: If they cannot speak or breathe, bend them forward and deliver 5 sharp blows between their shoulder blades using the heel of your hand.
+3. Give Abdominal Thrusts: Stand behind the person, wrap your arms around their waist, make a fist above their navel, and pull inward and upward quickly (5 times).
+4. Alternate: Repeat 5 back blows and 5 abdominal thrusts until the object is expelled.
+5. Unconscious Protocol: If the victim loses consciousness, gently lower them to the ground and start CPR compressions. Check the mouth before giving breaths.
+Contraindications: Do not perform abdominal thrusts on pregnant women or infants under 1 year. For pregnant women, use chest thrusts.
+
+Protocol: Road Accident Trauma
+1. Scene Safety: Ensure your safety first. Turn on hazard lights and place warning signs.
+2. Call Services: Immediately dial 1122 or 15.
+3. Stabilize Spine: Do not move the victim unless there is an immediate threat of fire, explosion, or building collapse. Stabilize the victim's head and neck manually to prevent movement.
+4. Check Airway & Breathing: Ensure the airway is clear. Perform rescue breaths if they stop breathing.
+5. Control Bleeding: Apply direct pressure to any actively bleeding wounds.
+6. Prevent Hypothermia: Keep the victim warm with blankets.
+Contraindications: Do not remove a motorcycle helmet unless the victim is not breathing and you cannot access the airway. Do not give the victim anything to drink.
+
+Protocol: Heat Stroke
+1. Move to Shade: Get the person out of the sun and into a cool, air-conditioned room or shade.
+2. Rapid Cooling: Cool the patient rapidly. Use a cool shower, spray them with water, or place ice packs or wet sheets on their neck, armpits, and groin.
+3. Hydrate (Conscious Only): If they are fully conscious, offer cool water or an electrolyte solution.
+4. Monitor Temp: Keep cooling until their body temperature drops below 101°F (38.3°C).
+5. Call Help: Heat stroke is a medical emergency. Call an ambulance immediately.
+Contraindications: Do not give fluids to an unconscious or vomiting patient. Do not use rubbing alcohol to cool the skin.
+
+Protocol: Fainting / Unconsciousness
+1. Safe Position: Lay the person flat on their back. Elevate their feet 12 inches off the ground to restore blood flow to the brain.
+2. Check Airway: Ensure the person is breathing normally. Loosen any tight clothing around the neck.
+3. Recovery Position: If breathing normally but unconscious, roll them onto their side into the recovery position to keep the airway clear.
+4. Fresh Air: Ensure the area has plenty of fresh air. Fan the patient if needed.
+5. Medical Check: Seek help if they do not wake up within 1 minute or have a history of heart conditions.
+Contraindications: Do not give food or drinks. Do not slap their face or splash cold water on them.
+
+Protocol: Seizure
+1. Keep Safe: Clear the surrounding area of any hard or sharp objects. Place something soft (like a folded jacket) under their head.
+2. Time the Seizure: Note the start time. If the seizure lasts longer than 5 minutes, call an ambulance.
+3. Do Not Restrain: Let the seizure run its course. Do not try to hold them down or stop their movements.
+4. Recovery: Once the shaking stops, gently roll them into the recovery position and monitor their breathing.
+Contraindications: Do not put anything in the person's mouth (no keys, spoons, or fingers). Do not try to force their mouth open.

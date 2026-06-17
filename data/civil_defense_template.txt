@@ -1,0 +1,21 @@
+CIVIL DEFENSE SITUATION REPORT (SITREP)
+=======================================
+Incident Type: {incident_type}
+Cluster Size: {cluster_size} incidents reported
+Target Area: {area_name}
+Threat Level: High
+Recommended Actions:
+- Mobilize ambulance staging units.
+- Put neighborhood hospitals on pre-alert status.
+- Alert local civil defense volunteers to control pedestrian traffic.
+
+شہری دفاعی صورتحال رپورٹ
+===================
+واقعہ کی قسم: {incident_type}
+منسلک واقعات: {cluster_size}
+متاثرہ علاقہ: {area_name}
+خطرہ کی سطح: شدید
+اہم ہدایات:
+- متاثرہ علاقہ میں ایمبولینس روانہ کریں۔
+- قریبی اسپتالوں کو الرٹ کریں۔
+- مقامی رضاکاروں کو ٹریفک بحال رکھنے کی ہدایت کریں۔

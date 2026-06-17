@@ -1,0 +1,110 @@
+[
+  {
+    "time": "22:14",
+    "area": "Garden, Karachi",
+    "type": "Gas Leak",
+    "severity": 4,
+    "lat": 24.8665,
+    "lng": 67.0235,
+    "user_message": "Sui gas cylinder leaking inside ground floor shop."
+  },
+  {
+    "time": "22:16",
+    "area": "Garden, Karachi",
+    "type": "Gas Leak",
+    "severity": 4,
+    "lat": 24.8662,
+    "lng": 67.0239,
+    "user_message": "Strong smell of LPG outdoors near the apartments."
+  },
+  {
+    "type": "Cardiac Event",
+    "severity": 5,
+    "area": "Garden, Karachi",
+    "lat": 24.8665,
+    "lng": 67.0235,
+    "user_message": "mere baap ko dil ka dorah para hai, woh gir gaye hain - main Garden mein hoon",
+    "time": "10:56"
+  },
+  {
+    "type": "General Emergency",
+    "severity": 3,
+    "area": "G-9, Islamabad",
+    "lat": 33.65650128942065,
+    "lng": 73.01693767348182,
+    "user_message": "Mere dost Abdulah Javed ko kidney failure ho gae hai, pls help",
+    "time": "11:33"
+  },
+  {
+    "type": "General Emergency",
+    "severity": 3,
+    "area": "Garden, Karachi",
+    "lat": 24.8665,
+    "lng": 67.0235,
+    "user_message": "[Audio Report Received]",
+    "time": "11:36"
+  },
+  {
+    "type": "Medical Concern - Abdominal Pain",
+    "severity": 2,
+    "area": "Garden, Karachi",
+    "lat": 24.8665,
+    "lng": 67.0235,
+    "user_message": "Dude, my friend has a stomach ache, so help me.",
+    "time": "11:41"
+  },
+  {
+    "type": "No Emergency Detected",
+    "severity": 0,
+    "area": "Garden, Karachi",
+    "lat": 24.8665,
+    "lng": 67.0235,
+    "user_message": "hi",
+    "time": "11:53"
+  },
+  {
+    "type": "Diabetic Emergency",
+    "severity": 3,
+    "area": "Garden, Karachi",
+    "lat": 24.8665,
+    "lng": 67.0235,
+    "user_message": "my friend is having headache plz help",
+    "time": "11:59"
+  },
+  {
+    "type": "Cardiac Event",
+    "severity": 5,
+    "area": "Garden, Karachi",
+    "lat": 24.8665,
+    "lng": 67.0235,
+    "user_message": "mere baap ko dil ka dorah para hai",
+    "time": "12:00"
+  },
+  {
+    "type": "Cardiac Event",
+    "severity": 5,
+    "area": "Garden, Karachi",
+    "lat": 24.8665,
+    "lng": 67.0235,
+    "user_message": "my friend is having heartattack plz help",
+    "time": "12:01"
+  },
+  {
+    "type": "Medical Concern",
+    "severity": 3,
+    "area": "Garden, Karachi",
+    "lat": 24.8665,
+    "lng": 67.0235,
+    "user_message": "Hello, my friend is having square headache. Please help him.",
+    "time": "12:03"
+  },
+  {
+    "type": "Unspecified Medical Emergency",
+    "severity": 3,
+    "area": "H-8, Islamabad",
+    "lat": 33.72,
+    "lng": 73.07,
+    "user_message": "Hello, my friend is having severe headache, please help me.",
+    "time": "12:04"
+  }
+]

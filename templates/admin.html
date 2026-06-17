@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HAALAT Command Center — System Diagnostics & Control Panel</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-base: #060913;
+            --bg-surface: rgba(15, 23, 42, 0.55);
+            --bg-card: rgba(30, 41, 59, 0.45);
+            --border-glow: rgba(255, 255, 255, 0.08);
+            --accent-primary: #00e676; /* Emerald */
+            --accent-secondary: #00b0ff; /* Light Blue */
+            --danger: #ff4a4a;
+            --warning: #ffb300;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --font-title: 'Outfit', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: radial-gradient(circle at 50% 0%, #1e293b 0%, var(--bg-base) 75%);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: rgba(10, 15, 30, 0.7);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-glow);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand img {
+            height: 42px;
+            width: auto;
+            border-radius: 6px;
+            box-shadow: none;
+        }
+
+        .brand-text h1 {
+            font-family: var(--font-title);
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #fff 0%, var(--accent-primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-text p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        nav {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+
+        nav a.active {
+            color: var(--accent-primary);
+            background: rgba(0, 230, 118, 0.08);
+            border: 1px solid rgba(0, 230, 118, 0.2);
+        }
+
+        nav a:hover:not(.active) {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .admin-layout {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Summary Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--bg-surface);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-glow);
+            border-radius: 14px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .stat-info h3 {
+            font-size: 2.2rem;
+            font-family: var(--font-title);
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .stat-info p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .icon-total { background: rgba(0, 176, 255, 0.12); color: var(--accent-secondary); }
+        .icon-vol { background: rgba(0, 230, 118, 0.12); color: var(--accent-primary); }
+        .icon-maps { background: rgba(255, 179, 0, 0.12); color: var(--warning); }
+        .icon-status { background: rgba(255, 74, 74, 0.12); color: var(--danger); }
+
+        /* Roster grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.6fr 1fr;
+            gap: 2rem;
+        }
+
+        .dashboard-box {
+            background: var(--bg-surface);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glow);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+
+        .box-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-glow);
+            padding-bottom: 0.8rem;
+        }
+
+        .box-header h2 {
+            font-family: var(--font-title);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn {
+            background: #1e293b;
+            color: #fff;
+            border: 1px solid var(--border-glow);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn:hover {
+            background: #334155;
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .btn-danger {
+            background: rgba(255, 74, 74, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(255, 74, 74, 0.2);
+        }
+
+        .btn-danger:hover {
+            background: var(--danger);
+            color: #000;
+            border-color: var(--danger);
+        }
+
+        /* Incidents Table */
+        .table-wrapper {
+            overflow-x: auto;
+            flex: 1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        th, td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid var(--border-glow);
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        tr:hover td {
+            background: rgba(255,255,255,0.01);
+        }
+
+        .badge {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .badge-danger { background: rgba(255, 74, 74, 0.15); color: var(--danger); border: 1px solid rgba(255, 74, 74, 0.3); }
+        .badge-warning { background: rgba(255, 179, 0, 0.15); color: var(--warning); border: 1px solid rgba(255, 179, 0, 0.3); }
+        .badge-info { background: rgba(0, 176, 255, 0.15); color: var(--accent-secondary); border: 1px solid rgba(0, 176, 255, 0.3); }
+
+        /* Volunteer list style */
+        .volunteer-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .volunteer-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .volunteer-item:hover {
+            border-color: rgba(255,255,255,0.12);
+        }
+
+        .vol-details h4 {
+            font-size: 0.92rem;
+            margin-bottom: 4px;
+        }
+
+        .vol-details p {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            line-height: 1.3;
+        }
+
+        .vol-status-btn {
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+
+        .status-available {
+            background: rgba(0, 230, 118, 0.12);
+            color: var(--accent-primary);
+            border: 1px solid rgba(0, 230, 118, 0.3);
+        }
+
+        .status-available:hover {
+            background: var(--accent-primary);
+            color: #000;
+        }
+
+        .status-on-call {
+            background: rgba(255, 179, 0, 0.12);
+            color: var(--warning);
+            border: 1px solid rgba(255, 179, 0, 0.3);
+        }
+
+        .status-on-call:hover {
+            background: var(--warning);
+            color: #000;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::before {
+            background:
+                linear-gradient(rgba(0, 176, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 230, 118, 0.03) 1px, transparent 1px);
+            background-size: 52px 52px;
+            mask-image: radial-gradient(circle at 50% 8%, black 0%, transparent 72%);
+            animation: adminGridDrift 18s linear infinite;
+        }
+
+        body::after {
+            background:
+                radial-gradient(circle at 15% 18%, rgba(0, 176, 255, 0.18), transparent 28%),
+                radial-gradient(circle at 88% 18%, rgba(0, 230, 118, 0.13), transparent 26%),
+                radial-gradient(circle at 50% 100%, rgba(255, 74, 74, 0.1), transparent 28%);
+            filter: blur(8px);
+            animation: adminGlow 10s ease-in-out infinite alternate;
+        }
+
+        header,
+        .admin-layout {
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            animation: adminDrop 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .stat-card,
+        .dashboard-box {
+            position: relative;
+            overflow: hidden;
+            animation: adminPanelRise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .stat-card::before,
+        .dashboard-box::before {
+            content: "";
+            position: absolute;
+            inset: -1px;
+            background: linear-gradient(110deg, transparent, rgba(0, 176, 255, 0.18), rgba(0, 230, 118, 0.12), transparent);
+            transform: translateX(-130%);
+            animation: adminCardScan 5s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .stat-card:nth-child(2)::before { animation-delay: 0.8s; }
+        .stat-card:nth-child(3)::before { animation-delay: 1.6s; }
+        .stat-card:nth-child(4)::before { animation-delay: 2.4s; }
+
+        .stat-icon {
+            animation: adminIconFloat 2.8s ease-in-out infinite;
+        }
+
+        .volunteer-item {
+            animation: rosterSlide 0.48s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .vol-status-btn.status-available {
+            animation: availablePulse 1.8s ease-in-out infinite;
+        }
+
+        tbody tr {
+            animation: tableRowIn 0.4s ease-out both;
+        }
+
+        @keyframes adminGridDrift {
+            from { background-position: 0 0, 0 0; }
+            to { background-position: 52px 104px, 104px 52px; }
+        }
+
+        @keyframes adminGlow {
+            from { transform: scale(1); opacity: 0.72; }
+            to { transform: scale(1.04); opacity: 0.94; }
+        }
+
+        @keyframes adminDrop {
+            from { opacity: 0; transform: translateY(-18px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes adminPanelRise {
+            from { opacity: 0; transform: translateY(16px) scale(0.985); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes adminCardScan {
+            0%, 42% { transform: translateX(-130%); }
+            72%, 100% { transform: translateX(130%); }
+        }
+
+        @keyframes adminIconFloat {
+            50% { transform: translateY(-4px) scale(1.05); filter: drop-shadow(0 0 12px currentColor); }
+        }
+
+        @keyframes rosterSlide {
+            from { opacity: 0; transform: translateX(12px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes availablePulse {
+            50% { box-shadow: 0 0 18px rgba(0, 230, 118, 0.36); }
+        }
+
+        @keyframes tableRowIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Professional command-center polish */
+        body {
+            background:
+                radial-gradient(circle at 18% -10%, rgba(0, 176, 255, 0.18), transparent 34%),
+                radial-gradient(circle at 84% 4%, rgba(0, 230, 118, 0.11), transparent 28%),
+                linear-gradient(180deg, #07101f 0%, #050712 62%, #03050b 100%);
+        }
+
+        header,
+        .stat-card,
+        .dashboard-box {
+            background: linear-gradient(180deg, rgba(16, 24, 39, 0.88), rgba(8, 13, 25, 0.82));
+            border: 1px solid rgba(148, 163, 184, 0.14);
+            border-radius: 8px !important;
+            box-shadow: 0 18px 42px rgba(0, 0, 0, 0.34);
+        }
+
+        .dashboard-box,
+        .stat-card,
+        .volunteer-item,
+        .btn,
+        .vol-status-btn {
+            border-radius: 8px !important;
+        }
+
+        .box-header,
+        th,
+        td {
+            border-bottom-color: rgba(148, 163, 184, 0.14);
+        }
+
+        .brand-text h1,
+        .stat-info p {
+            letter-spacing: 0;
+        }
+
+        .stat-card::before,
+        .dashboard-box::before {
+            opacity: 0.65;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.001ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">
+            <img src="/logo.png" alt="Haalat Logo">
+            <div class="brand-text">
+                <h1>HAALAT • حالت</h1>
+                <p>System Diagnostics & Command Control</p>
+            </div>
+        </div>
+        <nav>
+            <a href="/"><i class="fa-solid fa-headset"></i> Dispatch Console</a>
+            <a href="/admin" class="active"><i class="fa-solid fa-sliders"></i> System Admin</a>
+        </nav>
+    </header>
+
+    <div class="admin-layout">
+        <!-- Diagnostic Row -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3 id="stat-incidents">0</h3>
+                    <p>Logged Incidents</p>
+                </div>
+                <div class="stat-icon icon-total">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3 id="stat-volunteers">0</h3>
+                    <p>Active Responders</p>
+                </div>
+                <div class="stat-icon icon-vol">
+                    <i class="fa-solid fa-handshake-angle"></i>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3 id="stat-maps">Folium</h3>
+                    <p>Geo Routing engine</p>
+                </div>
+                <div class="stat-icon icon-maps">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3 id="stat-engine">Ready</h3>
+                    <p>RAG Engine State</p>
+                </div>
+                <div class="stat-icon icon-status">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Management Tables Grid -->
+        <div class="dashboard-grid">
+            <!-- Left Box: Incident Log -->
+            <div class="dashboard-box">
+                <div class="box-header">
+                    <h2><i class="fa-solid fa-clock-rotate-left" style="color: var(--accent-secondary);"></i> Recent Dispatches</h2>
+                    <button class="btn btn-danger" id="clear-incidents-btn">
+                        <i class="fa-solid fa-trash-can"></i> Flush Log
+                    </button>
+                </div>
+                
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Category</th>
+                                <th>Severity</th>
+                                <th>District / Coordinates</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="incidents-table-body">
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: var(--text-muted);">Retrieving telemetry...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Right Box: Volunteer Mobilization Control -->
+            <div class="dashboard-box">
+                <div class="box-header">
+                    <h2><i class="fa-solid fa-users-viewfinder" style="color: var(--accent-primary);"></i> Responder Network</h2>
+                </div>
+                <div class="volunteer-list" id="volunteer-list-body">
+                    <div style="text-align: center; color: var(--text-muted); padding: 2rem;">Loading volunteer status...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Telemetry Sync JS -->
+    <script>
+        const incidentsTableBody = document.getElementById('incidents-table-body');
+        const volunteerListBody = document.getElementById('volunteer-list-body');
+        const clearIncidentsBtn = document.getElementById('clear-incidents-btn');
+        
+        // Counter Elements
+        const statIncidents = document.getElementById('stat-incidents');
+        const statVolunteers = document.getElementById('stat-volunteers');
+        const statEngine = document.getElementById('stat-engine');
+
+        // Fetch dashboard telemetry on load and auto refresh
+        async function fetchTelemetry() {
+            try {
+                // Fetch Incidents
+                const incRes = await fetch('/api/incidents');
+                const incidents = await incRes.json();
+                statIncidents.textContent = incidents.length;
+                renderIncidents(incidents);
+
+                // Fetch Volunteers
+                const volRes = await fetch('/api/admin/volunteers');
+                const volunteers = await volRes.json();
+                
+                // Count available
+                const availableCount = volunteers.filter(v => v.availability === 'available').length;
+                statVolunteers.textContent = `${availableCount}/${volunteers.length}`;
+                renderVolunteers(volunteers);
+
+            } catch (err) {
+                console.error("Diagnostics sync failure", err);
+            }
+        }
+
+        function renderIncidents(incidents) {
+            if (incidents.length === 0) {
+                incidentsTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: var(--text-muted);">No active emergency dispatches logged.</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // Show latest first
+            incidentsTableBody.innerHTML = incidents.slice().reverse().map(inc => {
+                let badgeClass = 'badge-info';
+                if (inc.severity >= 5) badgeClass = 'badge-danger';
+                else if (inc.severity >= 3) badgeClass = 'badge-warning';
+
+                return `
+                    <tr>
+                        <td style="font-weight: 600;">${inc.time}</td>
+                        <td>${inc.type}</td>
+                        <td><span class="badge ${badgeClass}">Severity ${inc.severity}</span></td>
+                        <td>
+                            <div>${inc.area}</div>
+                            <span style="font-size:0.75rem; color:var(--text-muted);">${inc.lat.toFixed(4)}, ${inc.lng.toFixed(4)}</span>
+                        </td>
+                        <td>
+                            <button class="btn btn-danger" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;" onclick="resolveIncident('${inc.time}', '${inc.area}', '${inc.type}')">
+                                Resolve
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderVolunteers(volunteers) {
+            if (volunteers.length === 0) {
+                volunteerListBody.innerHTML = `
+                    <div style="text-align: center; color: var(--text-muted); padding: 2rem;">No registered volunteers in system.</div>
+                `;
+                return;
+            }
+
+            volunteerListBody.innerHTML = volunteers.map(vol => {
+                const isAvail = vol.availability === 'available';
+                const btnClass = isAvail ? 'status-available' : 'status-on-call';
+                const statusLabel = isAvail ? 'Available' : 'On Call';
+                
+                return `
+                    <div class="volunteer-item">
+                        <div class="vol-details">
+                            <h4>${vol.name}</h4>
+                            <p><i class="fa-solid fa-location-dot"></i> ${vol.area} (${vol.region.toUpperCase()})</p>
+                            <p style="font-size: 0.75rem; color: var(--accent-secondary); margin-top: 2px;">
+                                ${vol.skills.join(', ')}
+                            </p>
+                        </div>
+                        <button class="vol-status-btn ${btnClass}" onclick="toggleVolunteerStatus('${vol.id}')">
+                            ${statusLabel}
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Toggle responder availability
+        async function toggleVolunteerStatus(id) {
+            try {
+                const response = await fetch('/api/admin/toggle-volunteer', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ id })
+                });
+                if (response.ok) {
+                    fetchTelemetry();
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Resolve individual incident
+        async function resolveIncident(time, area, type) {
+            try {
+                const response = await fetch('/api/admin/delete-incident', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ time, area, type })
+                });
+                if (response.ok) {
+                    fetchTelemetry();
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Flush log
+        clearIncidentsBtn.addEventListener('click', async () => {
+            if (!confirm("Flush all logged incidents from system history?")) return;
+            try {
+                const response = await fetch('/api/admin/clear-incidents', {
+                    method: 'POST'
+                });
+                if (response.ok) {
+                    fetchTelemetry();
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        });
+
+        // Initialize & poll
+        fetchTelemetry();
+        setInterval(fetchTelemetry, 6000);
+    </script>
+</body>
+</html>
